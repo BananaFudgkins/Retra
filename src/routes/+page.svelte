@@ -12,13 +12,28 @@
         FileUploader,
     } from "carbon-components-svelte";
 
-    function fileAdded(event: CustomEvent<ReadonlyArray<File>>) {
+    let parsedData: string[] = [];
+
+    async function onAdd(event: CustomEvent<ReadonlyArray<File>>) {
         const files = event.detail;
-        console.log("Files added: ", files);
 
         for (const file of files) {
-            console.log(file.name, file.size);
+            if (file.type === "application/json") {
+                let json = await readJson(file);
+                parsedData.push(json as string);
+            }
         }
+
+        console.log("Parsed", parsedData.length, "files.");
+    }
+
+    function readJson(file: File) {
+        const reader = new FileReader();
+        return new Promise((resolve, reject) => {
+            reader.onload = () => resolve(JSON.parse(reader.result as string));
+            reader.onerror = reject;
+            reader.readAsText(file);
+        });
     }
 </script>
 
@@ -42,7 +57,7 @@
                     labelDescription="Upload your Spotify extended listening history. Only JSON files are accepted."
                     accept={[".json"]}
                     status="complete"
-                    on:add={fileAdded}
+                    on:add={onAdd}
                 />
             </Column>
         </Row>
