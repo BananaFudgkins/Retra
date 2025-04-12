@@ -37,9 +37,7 @@
     }
 </script>
 
-<Header company="Deja Jackson" platformName="Retra">
-
-</Header>
+<Header company="Deja Jackson" platformName="Retra"/>
 
 <Content>
     <Grid>
